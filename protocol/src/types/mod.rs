@@ -27,8 +27,20 @@ pub enum GameMode {
     Spectator = 3,
 }
 
-impl GameMode {
-    pub fn from_int(val: i32) -> GameMode {
+impl From<u8> for GameMode {
+    fn from(val: u8) -> Self {
+        GameMode::from(val as i32)
+    }
+}
+
+impl From<f32> for GameMode {
+    fn from(val: f32) -> Self {
+        GameMode::from(val as i32)
+    }
+}
+
+impl From<i32> for GameMode {
+    fn from(val: i32) -> Self {
         match val {
             3 => GameMode::Spectator,
             2 => GameMode::Adventure,
@@ -37,16 +49,13 @@ impl GameMode {
             _ => GameMode::Survival,
         }
     }
-
+}
+impl GameMode {
     pub fn can_fly(&self) -> bool {
         matches!(*self, GameMode::Creative | GameMode::Spectator)
     }
 
-    pub fn always_fly(&self) -> bool {
-        matches!(*self, GameMode::Spectator)
-    }
-
-    pub fn noclip(&self) -> bool {
+    pub fn is_spectator(&self) -> bool {
         matches!(*self, GameMode::Spectator)
     }
 }

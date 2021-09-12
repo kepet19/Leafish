@@ -1700,7 +1700,7 @@ impl Server {
     }
 
     fn on_game_join(&self, gamemode: u8, entity_id: i32) {
-        let gamemode = GameMode::from_int((gamemode & 0x7) as i32);
+        let gamemode = GameMode::from(gamemode & 0x7);
         let player = entity::player::create_local(&mut self.entities.clone().write());
         if let Some(info) = self.players.clone().read().get(&self.uuid) {
             let model = self
@@ -1776,7 +1776,7 @@ impl Server {
     }
 
     fn respawn(&self, gamemode_u8: u8) {
-        let gamemode = GameMode::from_int((gamemode_u8 & 0x7) as i32);
+        let gamemode = GameMode::from(gamemode_u8 & 0x7);
 
         if let Some(player) = *self.player.clone().write() {
             self.hud_context.clone().write().update_game_mode(gamemode);
@@ -1830,7 +1830,7 @@ impl Server {
     fn on_game_state_change(&self, game_state: packet::play::clientbound::ChangeGameState) {
         if game_state.reason == 3 {
             if let Some(player) = *self.player.write() {
-                let gamemode = GameMode::from_int(game_state.value as i32);
+                let gamemode = GameMode::from(game_state.value);
                 self.hud_context.clone().write().update_game_mode(gamemode);
                 *self
                     .entities
@@ -2152,7 +2152,7 @@ impl Server {
 
                 display_name: None,
                 ping: 0, // TODO: don't overwrite from PlayerInfo_String
-                gamemode: GameMode::from_int(0),
+                gamemode: GameMode::from(0),
             });
 
         self.on_player_spawn(
@@ -2485,13 +2485,13 @@ impl Server {
 
                         display_name: display.clone(),
                         ping: ping.0,
-                        gamemode: GameMode::from_int(gamemode.0),
+                        gamemode: GameMode::from(gamemode.0),
                     });
                     // Re-set the props of the player in case of dodgy server implementations
                     info.name = name;
                     info.display_name = display;
                     info.ping = ping.0;
-                    info.gamemode = GameMode::from_int(gamemode.0);
+                    info.gamemode = GameMode::from(gamemode.0);
                     for prop in properties {
                         if prop.name != "textures" {
                             continue;
@@ -2544,7 +2544,7 @@ impl Server {
                 }
                 UpdateGamemode { uuid, gamemode } => {
                     if let Some(info) = self.players.clone().write().get_mut(&uuid) {
-                        info.gamemode = GameMode::from_int(gamemode.0);
+                        info.gamemode = GameMode::from(gamemode.0);
                     }
                 }
                 UpdateLatency { uuid, ping } => {

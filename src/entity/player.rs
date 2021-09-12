@@ -653,7 +653,7 @@ impl ecs::System for MovementHandler {
                 m.add_component(e, self.gravity, Gravity::new());
             }
             let gamemode = m.get_component(e, self.gamemode).unwrap();
-            movement.flying |= gamemode.always_fly();
+            movement.flying |= gamemode.is_spectator();
             if (dead || !focused)
                 && (movement.pressed_keys.len() > 1
                     || (!movement.pressed_keys.is_empty()
@@ -681,7 +681,7 @@ impl ecs::System for MovementHandler {
                             movement.want_to_fly = !movement.want_to_fly;
                             //info!("double jump! dt={:?} toggle want_to_fly = {}", dt, movement.want_to_fly);
 
-                            if gamemode.can_fly() && !gamemode.always_fly() {
+                            if gamemode.can_fly() && !gamemode.is_spectator() {
                                 movement.flying = movement.want_to_fly;
                             }
                         }
@@ -744,7 +744,7 @@ impl ecs::System for MovementHandler {
                     forward * yaw.sin() * (speed + looking_vec.1 * additional_speed);
                 position.position.y += velocity.velocity.y;
 
-                if !gamemode.noclip() {
+                if !gamemode.is_spectator() {
                     let mut target = position.position;
                     position.position.y = last_position.y;
                     position.position.z = last_position.z;

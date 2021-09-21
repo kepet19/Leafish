@@ -29,6 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+          default: true
+
       - name: Get Rust version
         run: |
           cargo -V
@@ -46,12 +53,6 @@ jobs:
             target/
           key: ${{ runner.os }}-${{ env.RUSTC_VERSION }}-lock-hash-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy, rustfmt
-          default: true
 
       - name: "[Linux ONLY] Install dependencies"
         if: ${{ matrix.os == 'ubuntu-latest' }}
